@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ title }}</h1>
+  {% if action %}<a class="button" href="{{ action.url }}">{{ action.label }}</a>{% endif %}
+</div>
+{% if rows %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr>{% for c in columns %}<th class="{{ 'num' if c.fmt in ('money','int') }}">{{ c.label }}</th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for r in rows %}
+        <tr>{% for c in columns %}<td class="{{ 'num' if c.fmt in ('money','int') }}">{{ fmt(r[c.key], c.fmt) }}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if totals %}
+    <dl class="totals">{% for k, v in totals.items() %}<div><dt>{{ k }}</dt><dd>{{ v|money }}</dd></div>{% endfor %}</dl>
+  {% endif %}
+{% else %}
+  <p class="empty">Nothing recorded yet.{% if action %} <a href="{{ action.url }}">{{ action.label }}</a> to get started.{% endif %}</p>
+{% endif %}
+{% endblock %}

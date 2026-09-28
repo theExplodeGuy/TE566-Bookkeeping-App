@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Expense accounts</h1><a class="button ghost" href="{{ url_for('paid_expenses') }}">Paid expenses</a></div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Expense</th><th class="num">Cost per month</th><th class="num">Per year</th><th class="num">Paid so far</th><th></th></tr></thead>
+  <tbody>{% for r in rows %}
+    <tr><td>{{ r.name }}</td><td class="num">{{ r.monthly_amount|money }}</td><td class="num">{{ (r.monthly_amount*12)|money }}</td>
+      <td class="num">{{ r.paid|money }}</td>
+      <td><form method="post" action="{{ url_for('pay_bill') }}"><input type="hidden" name="expense_id" value="{{ r.id }}">
+        <button class="small" type="submit">Pay {{ r.name }}</button></form></td></tr>
+  {% endfor %}</tbody>
+</table></div>
+<dl class="totals">
+  <div><dt>Total per month</dt><dd>{{ rows|sum(attribute='monthly_amount')|money }}</dd></div>
+  <div><dt>Total per year</dt><dd>{{ (rows|sum(attribute='monthly_amount')*12)|money }}</dd></div>
+</dl>
+{% endblock %}

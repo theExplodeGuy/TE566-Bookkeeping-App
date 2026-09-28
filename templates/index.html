@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Main menu</h1>
+<div class="snapshot">
+  <div><span>Cash</span><b class="{{ 'neg' if bs.cash < 0 }}">{{ bs.cash|money }}</b></div>
+  <div><span>Accounts receivable</span><b>{{ bs.ar|money }}</b></div>
+  <div><span>Accounts payable</span><b>{{ bs.ap|money }}</b></div>
+  <div><span>Finished trucks</span><b>{{ "{:,}".format(fg) }}</b></div>
+  <div><span>Net income</span><b class="{{ 'neg' if inc.net_income < 0 }}">{{ inc.net_income|money }}</b></div>
+</div>
+
+<div class="menu">
+  <section><h2>People</h2>
+    <a href="{{ url_for('employees') }}">List employees</a><a href="{{ url_for('add_employee') }}">Add employee</a>
+    <a href="{{ url_for('customers') }}">List customers</a><a href="{{ url_for('add_customer') }}">Add customer</a>
+    <a href="{{ url_for('vendors') }}">List vendors</a><a href="{{ url_for('add_vendor') }}">Add vendor</a>
+  </section>
+  <section><h2>Transactions</h2>
+    <a href="{{ url_for('pay') }}">Pay employee</a><a href="{{ url_for('payroll_history') }}">Payroll history</a>
+    <a href="{{ url_for('create_invoice') }}">Create invoice</a><a href="{{ url_for('invoices') }}">Invoice history</a>
+    <a href="{{ url_for('create_po') }}">Create PO</a><a href="{{ url_for('purchase_orders') }}">PO history</a>
+    <a href="{{ url_for('expenses') }}">Pay a monthly bill</a><a href="{{ url_for('paid_expenses') }}">Paid expenses</a>
+  </section>
+  <section><h2>Inventory and reports</h2>
+    <a href="{{ url_for('inventory') }}">Inventory</a><a href="{{ url_for('build') }}">Build units</a>
+    <a href="{{ url_for('income_statement') }}">Income statement</a><a href="{{ url_for('balance_sheet') }}">Balance sheet</a>
+    <a href="{{ url_for('cash_flow') }}">Cash flow</a><a href="{{ url_for('report') }}">Printable report</a>
+  </section>
+</div>
+{% endblock %}

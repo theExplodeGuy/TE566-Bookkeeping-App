@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }} – Mr. Truck Inc.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="band">
+    <a class="brand" href="{{ url_for('index') }}">Mr. Truck Inc.</a>
+    <p class="book-date"><span>Books dated</span> {{ book_date|longdate }}</p>
+  </header>
+
+  <div class="shell">
+    <nav class="side" aria-label="Main">
+      {% set groups = [
+        ("People", [("employees","Employees"),("customers","Customers"),("vendors","Vendors")]),
+        ("Payroll", [("pay","Pay employee"),("payroll_history","Payroll history")]),
+        ("Sales", [("create_invoice","Create invoice"),("invoices","Invoice history")]),
+        ("Purchasing", [("create_po","Create PO"),("purchase_orders","PO history")]),
+        ("Inventory", [("inventory","Inventory"),("build","Build units")]),
+        ("Expenses", [("expenses","Expense accounts"),("paid_expenses","Paid expenses")]),
+        ("Statements", [("statements","Income + balance"),("income_statement","Income statement"),
+                        ("balance_sheet","Balance sheet"),("cash_flow","Cash flow"),
+                        ("report","Printable report"),("journal","Journal")]),
+      ] %}
+      <a class="nav-home {{ 'on' if request.endpoint == 'index' }}" href="{{ url_for('index') }}">Main menu</a>
+      {% for heading, links in groups %}
+        <p class="nav-h">{{ heading }}</p>
+        {% for ep, label in links %}
+          <a class="{{ 'on' if request.endpoint == ep }}" href="{{ url_for(ep) }}">{{ label }}</a>
+        {% endfor %}
+      {% endfor %}
+      <a class="nav-test {{ 'on' if request.endpoint == 'testing' }}" href="{{ url_for('testing') }}">Testing and setup</a>
+    </nav>
+
+    <main>
+      {% if low_stock %}
+        <div class="notice warn" role="status">
+          <strong>Low stock:</strong>
+          {% for p in low_stock %}{{ p.name }} ({{ "{:,}".format(p.qty_on_hand) }} on hand, reorder at {{ "{:,}".format(p.reorder_point) }}){{ ", " if not loop.last }}{% endfor %}.
+          <a href="{{ url_for('create_po') }}">Order parts</a>
+        </div>
+      {% endif %}
+      {% for cat, msg in get_flashed_messages(with_categories=true) %}
+        <div class="notice {{ cat }}" role="status">{{ msg }}</div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

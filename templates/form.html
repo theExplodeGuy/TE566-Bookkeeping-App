@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post" class="form">
+  {% for f in fields %}
+    <label for="{{ f.name }}">{{ f.label }}{% if f.required %} <span class="req">(required)</span>{% endif %}</label>
+    {% if f.type == 'select' %}
+      <select id="{{ f.name }}" name="{{ f.name }}">
+        {% for v, l in f.options %}<option value="{{ v }}">{{ l }}</option>{% endfor %}
+      </select>
+    {% else %}
+      <input id="{{ f.name }}" name="{{ f.name }}" type="{{ f.type or 'text' }}"
+             {% if f.step %}step="{{ f.step }}"{% endif %} {% if f.type == 'number' %}min="0"{% endif %}
+             {% if f.value is defined %}value="{{ f.value }}"{% endif %} {% if f.required %}required{% endif %}>
+    {% endif %}
+  {% endfor %}
+  <button type="submit">{{ submit }}</button>
+</form>
+{% endblock %}

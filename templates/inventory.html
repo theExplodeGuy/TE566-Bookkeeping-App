@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-head"><h1>Inventory</h1>
+  <span><a class="button ghost" href="{{ url_for('build') }}">Build units</a> <a class="button" href="{{ url_for('create_po') }}">Create PO</a></span></div>
+<div class="table-wrap"><table>
+  <thead><tr><th>Part</th><th>Supplier</th><th class="num">Price/unit</th><th class="num">Per truck</th><th class="num">Quantity</th>
+    <th class="num">Value</th><th class="num">Reorder point</th><th>Reorder</th></tr></thead>
+  <tbody>{% for p in inv.parts %}
+    <tr class="{{ 'flag' if p.reorder_point and p.qty_on_hand <= p.reorder_point }}">
+      <td>{{ p.name }}</td><td>{{ p.vendor }}</td><td class="num">${{ '%.2f'|format(p.unit_cost) }}</td>
+      <td class="num">{{ p.qty_per_unit }}</td><td class="num">{{ "{:,}".format(p.qty_on_hand) }}</td>
+      <td class="num">{{ p.value|money }}</td><td class="num">{{ "{:,}".format(p.reorder_point) }}</td>
+      <td>{% if p.reorder_point and p.qty_on_hand <= p.reorder_point %}<b>X</b>{% endif %}</td></tr>
+  {% endfor %}</tbody>
+</table></div>
+<dl class="totals">
+  <div><dt>Total parts value</dt><dd>{{ inv.parts_value|money }}</dd></div>
+  <div><dt>Cost of goods per unit</dt><dd>{{ inv.cog_per_unit|money }}</dd></div>
+  <div><dt>Units that can be built from current parts</dt><dd>{{ "{:,}".format(inv.buildable) }}</dd></div>
+  <div><dt>Complete units in stock</dt><dd>{{ "{:,}".format(inv.fg_qty) }}</dd></div>
+  <div><dt>Finished goods value</dt><dd>{{ inv.fg_value|money }}</dd></div>
+</dl>
+{% endblock %}

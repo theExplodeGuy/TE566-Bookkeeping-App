@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Journal</h1>
+<p class="lede">Every transaction as a double entry, newest first. Each entry's debits equal its credits.</p>
+{% for e in entries %}
+  <div class="entry">
+    <p class="entry-h"><b>#{{ e.id }}</b> {{ e.date }} <span>{{ e.memo }}</span></p>
+    <table class="compact"><tbody>
+      {% for l in lines[e.id] %}<tr><td class="{{ 'indent' if l.credit }}">{{ l.account }}</td>
+        <td class="num">{{ l.debit|money if l.debit }}</td><td class="num">{{ l.credit|money if l.credit }}</td></tr>{% endfor %}
+    </tbody></table>
+  </div>
+{% endfor %}
+{% endblock %}

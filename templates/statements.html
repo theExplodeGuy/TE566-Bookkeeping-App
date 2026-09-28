@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% macro row(label, value, cls='') -%}
+  <tr class="{{ cls }}"><td>{{ label }}</td><td class="num {{ 'neg' if value < 0 }}">{{ value|money }}</td></tr>
+{%- endmacro %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ title }}</h1>
+  <button class="ghost noprint" onclick="window.print()">Print</button>
+</div>
+<p class="as-of">Mr. Truck Inc., as of {{ book_date|longdate }}</p>
+
+<div class="statements {{ 'pair' if show|length > 1 }}">
+{% if 'is' in show %}
+<section class="stmt">
+  <h2>Income statement</h2>
+  <table class="fin"><tbody>
+    <tr class="sec"><th colspan="2">Sales</th></tr>
+    {{ row('Sales', inc.sales) }}
+    {{ row('Cost of goods sold', inc.cogs) }}
+    {{ row('Gross profit', inc.gross_profit, 'sub') }}
+    <tr class="sec"><th colspan="2">Expenses</th></tr>
+    {{ row('Payroll', inc.payroll) }}
+    {{ row('Payroll withholding', inc.withholding) }}
+    {{ row('Bills (10 expense accounts)', inc.bills_total) }}
+    {% for name, amt in inc.bills %}{{ row(name, amt, 'detail') }}{% endfor %}
+    {{ row('Total expenses', inc.total_expenses, 'sub') }}
+    {{ row('Other income', inc.other_income) }}
+    {{ row('Operating income', inc.operating_income, 'sub') }}
+    {{ row('Income taxes', inc.income_taxes) }}
+    {{ row('Net income', inc.net_income, 'grand') }}
+  </tbody></table>
+</section>
+{% endif %}
+
+{% if 'bs' in show %}
+<section class="stmt">
+  <h2>Balance sheet</h2>
+  <div class="bs">
+    <table class="fin"><tbody>
+      <tr class="sec"><th colspan="2">Assets</th></tr>
+      {{ row('Cash', bs.cash) }}
+      {{ row('Accounts receivable', bs.ar) }}
+      {{ row('Inventory', bs.inventory) }}
+      {{ row('Total current assets', bs.total_current, 'sub') }}
+      {{ row('Land/buildings', bs.land) }}
+      {{ row('Equipment', bs.equipment) }}
+      {{ row('Furniture and fixtures', bs.furniture) }}
+      {{ row('Total fixed assets', bs.total_fixed, 'sub') }}
+      {{ row('Total assets', bs.total_assets, 'grand') }}
+    </tbody></table>
+    <table class="fin"><tbody>
+      <tr class="sec"><th colspan="2">Liabilities and net worth</th></tr>
+      {{ row('Accounts payable', bs.ap) }}
+      {{ row('Notes payable', bs.notes) }}
+      {{ row('Accruals', bs.accruals) }}
+      {{ row('Total current liabilities', bs.total_current_liab, 'sub') }}
+      {{ row('Mortgage', bs.mortgage) }}
+      {{ row('Total long-term debt', bs.total_ltd, 'sub') }}
+      {{ row('Total liabilities', bs.total_liab, 'sub') }}
+      {{ row('Owner investment', bs.investment, 'detail') }}
+      {{ row('Net income to date', bs.net_income, 'detail') }}
+      {{ row('Net worth', bs.net_worth, 'sub') }}
+      {{ row('Total liabilities and net worth', bs.total_le, 'grand') }}
+    </tbody></table>
+  </div>
+  {% if bs.difference == 0 %}
+    <p class="check ok">Balanced: total assets equal total liabilities plus net worth.</p>
+  {% else %}
+    <p class="check bad">Out of balance by {{ bs.difference|money }}. Check the journal for the last entry.</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if 'cf' in show %}
+<section class="stmt">
+  <h2>Cash flow statement</h2>
+  <table class="fin"><tbody>
+    <tr class="sec"><th colspan="2">Operating activities</th></tr>
+    {% for label, amt in cf.operating_lines %}{{ row(label, amt) }}{% endfor %}
+    {{ row('Net cash from operations', cf.operating, 'sub') }}
+    <tr class="sec"><th colspan="2">Investing activities</th></tr>
+    {{ row('Long-term asset purchases', cf.investing) }}
+    <tr class="sec"><th colspan="2">Financing activities</th></tr>
+    {% for label, amt in cf.financing_lines %}{{ row(label, amt) }}{% endfor %}
+    {{ row('Net cash from financing', cf.financing, 'sub') }}
+    {{ row('Net change in cash (beginning cash $0)', cf.net_change, 'sub') }}
+    {{ row('Ending cash', cf.ending_cash, 'grand') }}
+  </tbody></table>
+</section>
+{% endif %}
+</div>
+{% endblock %}

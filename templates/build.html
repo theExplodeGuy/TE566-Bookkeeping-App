@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Build units</h1>
+<p class="lede">With the parts on hand you can build <b>{{ "{:,}".format(inv.buildable) }}</b> trucks. Building moves their cost from parts inventory to finished goods; total assets don't change.</p>
+<form method="post" class="form inline">
+  <label for="units">Number of units to build</label>
+  <input id="units" name="units" type="number" min="1" max="{{ inv.buildable }}" required>
+  <button type="submit">Build units</button>
+</form>
+{% endblock %}

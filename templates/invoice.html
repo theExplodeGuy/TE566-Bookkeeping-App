@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create invoice</h1>
+<p class="lede">Net 30: the sale is recorded as Accounts Receivable and collected when you close the month.</p>
+<form method="post" class="form inline">
+  <label for="customer_id">Customer</label>
+  <select id="customer_id" name="customer_id" required>
+    {% for c in customers %}<option value="{{ c.id }}">{{ c.company }} ({{ c.price|money }} per truck)</option>{% endfor %}
+  </select>
+  <label for="qty">Number of units to invoice</label>
+  <input id="qty" name="qty" type="number" min="1" max="{{ in_stock }}" required>
+  <p class="stock">Units in stock: <b>{{ "{:,}".format(in_stock) }}</b>{% if in_stock == 0 %} (<a href="{{ url_for('build') }}">build units</a> first){% endif %}</p>
+  <button type="submit">Create invoice</button>
+</form>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Create purchase order</h1>
+<p class="lede">Net 30: parts arrive now and the bill is recorded as Accounts Payable, paid when you close the month. You are billed for the quantity received.</p>
+<div class="two">
+<form method="post" class="form">
+  <h2>One part</h2>
+  <input type="hidden" name="mode" value="single">
+  <label for="part_id">Part</label>
+  <select id="part_id" name="part_id" required>
+    {% for p in parts %}<option value="{{ p.id }}">{{ p.name }} from {{ p.vendor }} at ${{ '%.2f'|format(p.unit_cost) }}</option>{% endfor %}
+  </select>
+  <label for="qty_ordered">Quantity ordered</label>
+  <input id="qty_ordered" name="qty_ordered" type="number" min="1" required>
+  <label for="qty_received">Quantity received (leave blank if same as ordered)</label>
+  <input id="qty_received" name="qty_received" type="number" min="1">
+  <button type="submit">Create PO</button>
+</form>
+<form method="post" class="form">
+  <h2>Complete truck sets</h2>
+  <input type="hidden" name="mode" value="kits">
+  <p>Creates one PO per vendor with enough parts to build the number of trucks you enter. One set costs {{ cog_per_unit|money }}.</p>
+  <label for="sets">Number of truck sets</label>
+  <input id="sets" name="sets" type="number" min="1" required data-cost="{{ cog_per_unit }}">
+  <p class="stock">Estimated cost: <b id="kit-cost">$0.00</b></p>
+  <button type="submit">Create POs for all parts</button>
+</form>
+</div>
+<script>
+  const s = document.getElementById('sets'), out = document.getElementById('kit-cost');
+  s.addEventListener('input', () => {
+    const v = (parseInt(s.value || 0) * parseFloat(s.dataset.cost));
+    out.textContent = '$' + v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  });
+</script>
+{% endblock %}
